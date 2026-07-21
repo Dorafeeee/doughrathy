@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Stamp — Doughrathy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,600..900,100&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --crust: #3A2318;
+    --dough: #F5EADB;
+    --blush: #ECC9BF;
+    --zobo:  #77293A;
+    --ok:    #3E6B3A;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Karla', sans-serif;
+    background: var(--crust);
+    color: var(--dough);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+  }
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 900;
+    font-variation-settings: 'SOFT' 100;
+    font-size: 1.5rem;
+    margin-bottom: 4px;
+  }
+  .sub { font-size: 0.8rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--blush); margin-bottom: 32px; }
+
+  .panel { width: 100%; max-width: 380px; }
+  .hidden { display: none; }
+
+  label { display: block; font-size: 0.85rem; font-weight: 700; margin: 14px 0 6px; color: var(--blush); }
+  input {
+    width: 100%;
+    padding: 14px 16px;
+    font-family: 'Karla', sans-serif;
+    font-size: 1.05rem;
+    border: none;
+    border-radius: 12px;
+    background: #FCF6EE;
+    color: #2B1A12;
+  }
+  input:focus { outline: 3px solid var(--blush); outline-offset: 2px; }
+
+  button {
+    width: 100%;
+    padding: 15px;
+    margin-top: 14px;
+    font-family: 'Karla', sans-serif;
+    font-weight: 700;
+    font-size: 1.05rem;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+  }
+  button:disabled { opacity: 0.6; cursor: wait; }
+  .primary { background: var(--blush); color: var(--crust); }
+  .secondary { background: transparent; color: var(--blush); border: 2px solid var(--blush); }
+  .danger { background: var(--zobo); color: var(--dough); }
+  button:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+
+  .status {
+    margin-top: 18px;
+    padding: 14px 16px;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    background: rgba(255,255,255,0.08);
+    min-height: 1em;
+  }
+  .status.ok { background: rgba(62,107,58,0.35); }
+  .status.err { background: rgba(119,41,58,0.5); }
+
+  .cardinfo {
+    margin-top: 18px;
+    padding: 16px;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.08);
+  }
+  .cardinfo .who { font-family: 'Fraunces', serif; font-weight: 700; font-size: 1.2rem; }
+  .cardinfo .count { font-size: 2.2rem; font-family: 'Fraunces', serif; font-weight: 900; margin: 6px 0 2px; }
+  .cardinfo .meta { font-size: 0.85rem; color: var(--blush); }
+
+  .row { display: flex; gap: 10px; }
+  .row button { flex: 1; }
+</style>
+</head>
+<body>
+
+  <h1>Doughrathy</h1>
+  <div class="sub">Stamping station</div>
+
+  <!-- PIN gate -->
+  <div class="panel" id="pinPanel">
+    <label for="pin">Admin PIN</label>
+    <input type="password" id="pin" inputmode="numeric" autocomplete="off">
+    <button class="primary" id="pinBtn">Enter</button>
+    <div class="status" id="pinMsg"></div>
+  </div>
+
+  <!-- Stamping tool -->
+  <div class="panel hidden" id="toolPanel">
+    <label for="phone">Customer phone number</label>
+    <input type="tel" id="phone" inputmode="tel" placeholder="0803 123 4567">
+
+    <label for="name">Name (optional, saved on first stamp)</label>
+    <input type="text" id="name" placeholder="e.g. Tola">
+
+    <button class="secondary" id="lookupBtn">Look up card</button>
+
+    <div class="cardinfo hidden" id="cardInfo">
+      <div class="who" id="ciName"></div>
+      <div class="count" id="ciStamps"></div>
+      <div class="meta" id="ciMeta"></div>
+    </div>
+
+    <div class="row">
+      <button class="primary" id="stampBtn">Stamp +1</button>
+      <button class="primary" id="stamp2Btn">Stamp +2</button>
+    </div>
+    <button class="danger" id="redeemBtn">Redeem free bake</button>
+
+    <div class="status" id="msg" role="status" aria-live="polite"></div>
+  </div>
+
+<script>
+  /* ============================================
+     CONFIG — paste your Apps Script Web App URL here
+     (same URL as loyalty.html)
+     ============================================ */
+  const API_URL = 'https://script.google.com/macros/s/AKfycbx7-bRFKJS-l3TzP1oQSc6w8uS65bvbjL0IPyQ2gusjzYtBaxi74JLYWWFU9L7ddBlEdg/exec';
+  /* ============================================ */
+
+  let PIN = '';
+
+  const $ = id => document.getElementById(id);
+
+  $('pinBtn').addEventListener('click', () => {
+    PIN = $('pin').value.trim();
+    if (!PIN) { $('pinMsg').textContent = 'Enter your PIN.'; return; }
+    // PIN is verified by the server on every action; this just opens the tool.
+    $('pinPanel').classList.add('hidden');
+    $('toolPanel').classList.remove('hidden');
+  });
+  $('pin').addEventListener('keydown', e => { if (e.key === 'Enter') $('pinBtn').click(); });
+
+  $('lookupBtn').addEventListener('click', lookup);
+  $('stampBtn').addEventListener('click', () => act('stamp', 1));
+  $('stamp2Btn').addEventListener('click', () => act('stamp', 2));
+  $('redeemBtn').addEventListener('click', () => act('redeem'));
+
+  function setMsg(text, cls) {
+    const m = $('msg');
+    m.textContent = text;
+    m.className = 'status' + (cls ? ' ' + cls : '');
+  }
+
+  function showCard(data) {
+    $('cardInfo').classList.remove('hidden');
+    $('ciName').textContent = data.name || 'No name saved';
+    $('ciStamps').textContent = data.stamps + ' / ' + (data.goal || 10);
+    $('ciMeta').textContent = 'Free bakes redeemed: ' + (data.rewards || 0);
+  }
+
+  async function lookup() {
+    const phone = $('phone').value.trim();
+    if (!phone) { setMsg('Enter a phone number first.', 'err'); return; }
+    setMsg('Looking up…');
+    try {
+      const res = await fetch(API_URL + '?action=lookup&phone=' + encodeURIComponent(phone));
+      const data = await res.json();
+      if (!data.ok) { setMsg(data.error, 'err'); return; }
+      if (!data.found) {
+        $('cardInfo').classList.add('hidden');
+        setMsg('No card yet. Stamping will create one.', '');
+        return;
+      }
+      showCard(data);
+      setMsg('Card found.', 'ok');
+    } catch (e) {
+      setMsg('Could not reach the server.', 'err');
+    }
+  }
+
+  async function act(action, count) {
+    const phone = $('phone').value.trim();
+    if (!phone) { setMsg('Enter a phone number first.', 'err'); return; }
+
+    const btns = ['stampBtn','stamp2Btn','redeemBtn','lookupBtn'];
+    btns.forEach(b => $(b).disabled = true);
+    setMsg(action === 'redeem' ? 'Redeeming…' : 'Stamping…');
+
+    try {
+      const res = await fetch(API_URL, {
+        method: 'POST',
+        body: JSON.stringify({
+          pin: PIN,
+          action: action,
+          phone: phone,
+          count: count || 1,
+          name: $('name').value.trim()
+        })
+      });
+      const data = await res.json();
+      if (!data.ok) { setMsg(data.error, 'err'); return; }
+
+      showCard(data);
+      if (data.redeemed) {
+        setMsg('Redeemed! Card reset with any extra stamps kept.', 'ok');
+      } else if (data.created) {
+        setMsg('New card created with ' + data.stamps + ' stamp' + (data.stamps === 1 ? '' : 's') + '.', 'ok');
+      } else {
+        setMsg('Stamped. Now at ' + data.stamps + '.', 'ok');
+      }
+    } catch (e) {
+      setMsg('Could not reach the server.', 'err');
+    } finally {
+      btns.forEach(b => $(b).disabled = false);
+    }
+  }
+</script>
+</body>
+</html>

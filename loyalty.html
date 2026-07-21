@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Loyalty Card — Doughrathy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,400..900,100&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  /* ============================================
+     DOUGHRATHY LOYALTY — CONFIG
+     ============================================ */
+  :root {
+    --crust:   #3A2318;   /* deep brown */
+    --crust-2: #4A2F1F;
+    --dough:   #F5EADB;   /* warm cream */
+    --blush:   #ECC9BF;   /* stamp panel */
+    --zobo:    #77293A;   /* burgundy accent */
+    --ink:     #2B1A12;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Karla', sans-serif;
+    background: var(--dough);
+    color: var(--ink);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 48px 20px 64px;
+  }
+
+  .brand {
+    font-family: 'Fraunces', serif;
+    font-weight: 900;
+    font-variation-settings: 'SOFT' 100;
+    font-size: 1.6rem;
+    color: var(--crust);
+    letter-spacing: 0.01em;
+  }
+  .tagline {
+    font-size: 0.8rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--zobo);
+    margin-top: 6px;
+    margin-bottom: 40px;
+  }
+
+  /* ---------- lookup ---------- */
+  .lookup {
+    width: 100%;
+    max-width: 380px;
+    text-align: center;
+  }
+  .lookup h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 1.5rem;
+    color: var(--crust);
+    margin-bottom: 8px;
+  }
+  .lookup p { font-size: 0.95rem; color: #6b5648; margin-bottom: 20px; }
+
+  .field { display: flex; gap: 10px; }
+  input[type="tel"] {
+    flex: 1;
+    min-width: 0;
+    padding: 14px 16px;
+    font-family: 'Karla', sans-serif;
+    font-size: 1rem;
+    border: 2px solid var(--crust);
+    border-radius: 12px;
+    background: #FFFDF9;
+    color: var(--ink);
+  }
+  input[type="tel"]:focus { outline: 3px solid var(--zobo); outline-offset: 2px; }
+
+  button.go {
+    padding: 14px 22px;
+    font-family: 'Karla', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    border: none;
+    border-radius: 12px;
+    background: var(--crust);
+    color: var(--dough);
+    cursor: pointer;
+  }
+  button.go:hover { background: var(--crust-2); }
+  button.go:focus-visible { outline: 3px solid var(--zobo); outline-offset: 2px; }
+  button.go:disabled { opacity: 0.6; cursor: wait; }
+
+  .msg {
+    margin-top: 16px;
+    font-size: 0.95rem;
+    color: var(--zobo);
+    min-height: 1.4em;
+  }
+
+  /* ---------- card ---------- */
+  .card-wrap {
+    width: 100%;
+    max-width: 380px;
+    margin-top: 36px;
+    display: none;
+  }
+  .card-wrap.show { display: block; }
+
+  .card {
+    background: var(--blush);
+    border-radius: 22px;
+    overflow: hidden;
+    box-shadow: 0 14px 34px rgba(58, 35, 24, 0.22);
+  }
+  .card-top {
+    background: var(--crust);
+    padding: 26px 24px 6px;
+    text-align: center;
+  }
+  .card-top .holder {
+    color: var(--blush);
+    font-size: 0.78rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .card-top .title {
+    font-family: 'Fraunces', serif;
+    font-weight: 900;
+    font-variation-settings: 'SOFT' 100;
+    font-size: 1.9rem;
+    color: var(--dough);
+  }
+  .wave { display: block; width: 100%; height: 26px; background: var(--crust); }
+  .wave svg { display: block; width: 100%; height: 26px; }
+
+  .stamps {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 14px;
+    padding: 22px 24px 10px;
+  }
+  .stamp {
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: #FCF6EE;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.35rem;
+    box-shadow: inset 0 2px 5px rgba(58, 35, 24, 0.12);
+  }
+  .stamp.reward-slot {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 0.62rem;
+    text-align: center;
+    line-height: 1.15;
+    color: var(--zobo);
+    padding: 4px;
+  }
+  .stamp.filled {
+    background: var(--crust);
+    box-shadow: 0 3px 8px rgba(58, 35, 24, 0.3);
+    animation: press 0.35s ease-out backwards;
+  }
+  @keyframes press {
+    0%   { transform: scale(1.6) rotate(-8deg); opacity: 0; }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .stamp.filled { animation: none; }
+  }
+
+  .card-foot {
+    padding: 8px 24px 22px;
+    text-align: center;
+  }
+  .progress {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 1.05rem;
+    color: var(--crust);
+  }
+  .rewards-note { font-size: 0.85rem; color: #7c5a4d; margin-top: 6px; }
+
+  .fineprint {
+    margin-top: 18px;
+    text-align: center;
+    font-size: 0.82rem;
+    color: #8a7263;
+    line-height: 1.5;
+  }
+
+  footer {
+    margin-top: auto;
+    padding-top: 48px;
+    font-size: 0.78rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #a08a7a;
+  }
+</style>
+</head>
+<body>
+
+  <div class="brand">Doughrathy</div>
+  <div class="tagline">Early Risers Loyalty</div>
+
+  <div class="lookup">
+    <h1>Find your card</h1>
+    <p>Enter the phone number you order with on WhatsApp.</p>
+    <div class="field">
+      <input type="tel" id="phone" inputmode="tel" placeholder="0803 123 4567" autocomplete="tel" aria-label="Phone number">
+      <button class="go" id="lookupBtn">View card</button>
+    </div>
+    <div class="msg" id="msg" role="status" aria-live="polite"></div>
+  </div>
+
+  <div class="card-wrap" id="cardWrap">
+    <div class="card">
+      <div class="card-top">
+        <div class="holder" id="holderName">Your card</div>
+        <div class="title">Loyalty Card</div>
+      </div>
+      <div class="wave">
+        <svg viewBox="0 0 380 26" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0,0 L380,0 L380,10 C355,26 330,26 305,14 C280,2 255,2 230,14 C205,26 180,26 155,14 C130,2 105,2 80,14 C55,26 30,26 10,16 L0,10 Z" fill="#3A2318"/>
+        </svg>
+      </div>
+      <div class="stamps" id="stampGrid"></div>
+      <div class="card-foot">
+        <div class="progress" id="progressText"></div>
+        <div class="rewards-note" id="rewardsNote"></div>
+      </div>
+    </div>
+    <div class="fineprint">
+      Stamps are added by Doughrathy with each order.
+      Collect all 10 and your next bake is on us.
+    </div>
+  </div>
+
+  <footer>Slow dough, honest pastries</footer>
+
+<script>
+  /* ============================================
+     CONFIG — paste your Apps Script Web App URL here
+     ============================================ */
+  const API_URL = 'https://script.google.com/macros/s/AKfycbx7-bRFKJS-l3TzP1oQSc6w8uS65bvbjL0IPyQ2gusjzYtBaxi74JLYWWFU9L7ddBlEdg/exec';
+  const STAMP_ICON = '🥐';
+  /* ============================================ */
+
+  const phoneInput = document.getElementById('phone');
+  const btn = document.getElementById('lookupBtn');
+  const msg = document.getElementById('msg');
+  const cardWrap = document.getElementById('cardWrap');
+  const grid = document.getElementById('stampGrid');
+
+  // Pre-fill last used number if available (safe if storage is blocked)
+  try {
+    const saved = localStorage.getItem('doughrathy_phone');
+    if (saved) phoneInput.value = saved;
+  } catch (e) {}
+
+  btn.addEventListener('click', lookup);
+  phoneInput.addEventListener('keydown', e => { if (e.key === 'Enter') lookup(); });
+
+  async function lookup() {
+    const phone = phoneInput.value.trim();
+    if (phone.replace(/\D/g, '').length < 7) {
+      msg.textContent = 'That number looks too short.';
+      return;
+    }
+    msg.textContent = '';
+    btn.disabled = true;
+    btn.textContent = 'Looking…';
+
+    try {
+      const res = await fetch(API_URL + '?action=lookup&phone=' + encodeURIComponent(phone));
+      const data = await res.json();
+
+      if (!data.ok) {
+        msg.textContent = data.error || 'Something went wrong. Try again.';
+        cardWrap.classList.remove('show');
+        return;
+      }
+
+      try { localStorage.setItem('doughrathy_phone', phone); } catch (e) {}
+
+      if (!data.found) {
+        msg.textContent = 'No card yet for that number. You get your first stamp with your next order.';
+        cardWrap.classList.remove('show');
+        return;
+      }
+
+      renderCard(data);
+    } catch (err) {
+      msg.textContent = 'Could not reach the card server. Check your connection and try again.';
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'View card';
+    }
+  }
+
+  function renderCard(data) {
+    const goal = data.goal || 10;
+    const onCard = Math.min(data.stamps, goal); // show progress toward the current reward
+    const holder = document.getElementById('holderName');
+    holder.textContent = data.name ? data.name + "'s card" : 'Your card';
+
+    grid.innerHTML = '';
+    for (let i = 0; i < goal; i++) {
+      const el = document.createElement('div');
+      el.className = 'stamp';
+      if (i < onCard) {
+        el.classList.add('filled');
+        el.textContent = STAMP_ICON;
+        el.style.animationDelay = (i * 0.07) + 's';
+      } else if (i === goal - 1) {
+        el.classList.add('reward-slot');
+        el.textContent = 'Free bake';
+      }
+      grid.appendChild(el);
+    }
+
+    const progress = document.getElementById('progressText');
+    if (onCard >= goal) {
+      progress.textContent = 'Card full! Your next bake is free 🎉';
+    } else {
+      const left = goal - onCard;
+      progress.textContent = left + (left === 1 ? ' stamp' : ' stamps') + ' to your free bake';
+    }
+
+    const rewardsNote = document.getElementById('rewardsNote');
+    rewardsNote.textContent = data.rewards > 0
+      ? 'Free bakes enjoyed so far: ' + data.rewards
+      : '';
+
+    cardWrap.classList.add('show');
+  }
+</script>
+</body>
+</html>
