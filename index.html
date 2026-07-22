@@ -97,8 +97,12 @@
     display:flex;flex-wrap:wrap;align-items:center;gap:24px;justify-content:space-between;
   }
   .drop-card.live{background:var(--brown);border-style:solid}
-  .drop-card.live .label p{color:#E8D8C2}
+  .drop-card.live .label p{color:#F5E9D5}
   .drop-card.live .mono{color:var(--butter)}
+  .drop-card.live .closes{
+    display:block;color:#fff;font-weight:700;font-size:1.05rem;margin-bottom:4px;
+  }
+  .drop-card.live .closes b{color:var(--butter);font-weight:700}
   .drop-card .label{max-width:34ch}
   .countdown{display:flex;gap:18px}
   .cd-unit{text-align:center;min-width:58px}
@@ -150,6 +154,7 @@
   .item{
     background:var(--cream);border:1px solid var(--line);border-radius:16px;
     padding:22px;transition:transform .18s ease;
+    display:flex;flex-direction:column;
   }
   .item:hover{transform:translateY(-4px) rotate(-.4deg)}
   .item .ph{
@@ -159,9 +164,10 @@
   .item .ph svg{width:74px;height:74px;stroke:var(--cocoa);fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
   .item .ph .accent{stroke:var(--gold)}
   .item h3{font-size:1.15rem;margin-bottom:6px}
-  .item p{font-size:.92rem;color:var(--cocoa)}
+  .item p{font-size:.92rem;color:var(--cocoa);margin-bottom:16px}
   .item .tag{
-    display:inline-block;margin-top:12px;font-family:'Courier Prime',monospace;
+    align-self:flex-start;margin-top:auto;
+    font-family:'Courier Prime',monospace;
     font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
     background:var(--butter);color:var(--brown);padding:3px 9px;border-radius:6px;
   }
@@ -556,8 +562,15 @@ function tick(){
     setHeroCta(true);
     dropCard.classList.add('live');
     dropLabel.textContent = 'The drop is open';
-    const hrsLeft = Math.max(1, Math.ceil((DROP_CLOSES - now)/36e5));
-    dropCopy.textContent = 'Orders close in about ' + hrsLeft + (hrsLeft === 1 ? ' hour.' : ' hours.') + ' Small batch. When it\u2019s claimed, it\u2019s closed.';
+    const closeDay = DROP_CLOSES.toLocaleDateString('en-GB',{weekday:'long'});
+    const closeTime = DROP_CLOSES.toLocaleTimeString('en-GB',{hour:'numeric',minute:'2-digit',hour12:true}).toUpperCase();
+    const msLeft = DROP_CLOSES - now;
+    const hrsLeft = Math.floor(msLeft/36e5);
+    const minLeft = Math.floor(msLeft/6e4)%60;
+    let left;
+    if(hrsLeft >= 1){ left = hrsLeft + (hrsLeft === 1 ? ' hr ' : ' hrs ') + minLeft + ' min left'; }
+    else { left = minLeft + ' min left'; }
+    dropCopy.innerHTML = '<span class="closes">Orders close <b>' + closeDay + ', ' + closeTime + '</b> \u00b7 ' + left + '.</span><br>Small batch. When it\u2019s claimed, it\u2019s closed.';
     return;
   }
   dropCard.classList.remove('live');
