@@ -292,7 +292,7 @@
 
   <p class="mono eyebrow">Small-batch bakery drops · Lagos, Nigeria</p>
   <h1>Some things are worth <span class="wonky">waking up</span> for.</h1>
-  <p class="lede">Doughrathy bakes in drops. Limited runs of wheat bread, muffins, banana bread, oatmeal cookies and chilled zobo. Everything is made in small batches, claimed fast, and baked fresh for the people who got there first.</p>
+  <p class="lede">Doughrathy bakes in drops. Limited runs of wheat bread, muffins, banana bread, oatmeal cookies, brownies, lemon crumble bars and chilled zobo. Everything is made in small batches, claimed fast, and baked fresh for the people who got there first.</p>
   <span class="margin-note">no shelf-sitting. no day-olds. ever.</span>
   <div class="btn-row">
     <a class="btn btn-primary" id="hero-cta" href="#waitlist">Join the Early Risers</a>
@@ -317,7 +317,7 @@
 <!-- ================= TICKER ================= -->
 <div class="ticker" aria-hidden="true">
   <div class="ticker-track" id="ticker-track">
-    <span>wheat bread <b>·</b></span><span>muffins <b>·</b></span><span>banana bread <b>·</b></span><span>oatmeal cookies <b>·</b></span><span>zobo, chilled <b>·</b></span>
+    <span>wheat bread <b>·</b></span><span>muffins <b>·</b></span><span>banana bread <b>·</b></span><span>oatmeal cookies <b>·</b></span><span>brownies <b>·</b></span><span>lemon crumble bars <b>·</b></span><span>zobo, chilled <b>·</b></span>
   </div>
 </div>
 
@@ -378,7 +378,7 @@
           <!-- muffin -->
           <svg viewBox="0 0 80 80"><path d="M22 42 q -6 -22 18 -22 q 24 0 18 22"/><path d="M24 42 h 32 l -5 22 h -22 z"/><path class="accent" d="M30 48 l -2 12 M40 48 v 12 M50 48 l 2 12"/></svg>
         </div>
-        <h3>Muffins</h3><p>Tender crumb, proper domed tops. Chocolate ganache, banana and seasonal flavours.</p><span class="tag">drop regular</span>
+        <h3>Muffins</h3><p>Tender crumb, proper domed tops. Chocolate ganache, banana and seasonal flavours.</p><span class="tag">the baker's pick</span>
       </div>
 
       <div class="item reveal">
@@ -387,6 +387,22 @@
           <svg viewBox="0 0 80 80"><path d="M20 34 q 20 -18 40 0 v 26 h -40 z"/><path class="accent" d="M28 40 q 12 -10 24 0 v 14 h -24 z"/></svg>
         </div>
         <h3>Banana Bread</h3><p>Moist, lightly spiced, studded with chocolate or walnuts on request.</p><span class="tag">drop regular</span>
+      </div>
+
+      <div class="item reveal">
+        <div class="ph" aria-hidden="true">
+          <!-- brownie stack -->
+          <svg viewBox="0 0 80 80"><rect x="20" y="34" width="40" height="26" rx="3"/><path d="M20 47 h 40 M33 34 v 26 M47 34 v 26"/><path class="accent" d="M26 30 q 2 -6 0 -10 M40 30 q 2 -6 0 -10 M54 30 q 2 -6 0 -10"/></svg>
+        </div>
+        <h3>Brownies</h3><p>Fudgy, dense, deeply chocolate. The corner-piece kind, all the way through.</p><span class="tag">crowd favourite</span>
+      </div>
+
+      <div class="item reveal">
+        <div class="ph" aria-hidden="true">
+          <!-- lemon crumble bar -->
+          <svg viewBox="0 0 80 80"><rect x="18" y="32" width="44" height="24" rx="3"/><path class="accent" d="M18 42 h 44"/><path d="M26 36 h .5 M34 38 h .5 M44 36 h .5 M52 38 h .5 M30 52 h .5 M40 50 h .5 M50 52 h .5"/><circle class="accent" cx="40" cy="48" r="3"/></svg>
+        </div>
+        <h3>Oatmeal Lemon Crumble Bars</h3><p>Buttery oat crumble over bright lemon. Nobody's ever managed to share one.</p><span class="tag">gone before you can share</span>
       </div>
 
       <div class="item reveal">
@@ -497,26 +513,26 @@
 // 1. Next drop schedule (Lagos time).
 //    DROP_OPENS: when orders open (countdown counts to this)
 //    DROP_CLOSES: when orders close (card returns to countdown mode after)
-const DROP_OPENS  = new Date('2026-07-20T10:00:00+01:00');
-const DROP_CLOSES = new Date('2026-07-23T12:00:00+01:00');
+const DROP_OPENS  = new Date('2026-07-16T18:00:00+01:00');
+const DROP_CLOSES = new Date('2026-07-18T12:00:00+01:00');
 
 // 2. Your Paystack storefront link. Used by the live-drop button,
 //    the hero "Order" button during a drop, and the footer link.
 //    Paste your storefront URL, e.g. 'https://paystack.shop/doughrathy'
-const STORE_URL = 'https://paystack.shop/doughrathy';
+const STORE_URL = 'YOUR_PAYSTACK_LINK_HERE';
 
 // 3. Google Form integration. Replace with your real values.
 //    Form action URL looks like:
 //    https://docs.google.com/forms/d/e/YOUR_FORM_ID/formResponse
-const GOOGLE_FORM_ID = '1FAIpQLSfkFKAo_Q9os5IkngqyXKOsxB9p1CryMCthmo-agPI5Hm2VDw';
-const ENTRY_NAME  = 'entry.659450646'; // replace with real entry ID for name
-const ENTRY_PHONE = 'entry.1544663072'; // replace with real entry ID for phone
-const ENTRY_EMAIL = 'entry.312789651'; // replace with real entry ID for email
+const GOOGLE_FORM_ID = 'YOUR_FORM_ID_HERE';
+const ENTRY_NAME  = 'entry.0000001'; // replace with real entry ID for name
+const ENTRY_PHONE = 'entry.0000002'; // replace with real entry ID for phone
+const ENTRY_EMAIL = 'entry.0000003'; // replace with real entry ID for email
 
 // 4. Contact details. REPLACE THESE before deploying.
-const WHATSAPP_NUMBER = '2349038082878';           // digits only, country code first
-const EMAIL_ADDRESS   = 'doughrathy@gmail.com';    // your real email
-const INSTAGRAM_URL   = 'https://instagram.com/doughrathy';
+const WHATSAPP_NUMBER = '234XXXXXXXXXX';           // digits only, country code first
+const EMAIL_ADDRESS   = 'hello@doughrathy.com';    // your real email
+const INSTAGRAM_URL   = 'https://instagram.com/YOUR_HANDLE';
 
 // 5. "Currently baking" lines. Rotates on each page load.
 const NOW_BAKING = [
